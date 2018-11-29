@@ -42,8 +42,9 @@ class GN:
             if len(components) != self.partitionNum :
 				#compute the Q
                 self.partitionNum = len(components)
-                #print(self.partitionNum)
+                
                 cur_Q = self.cal_Q(components, self.G_copy)
+                print(self.partitionNum,cur_Q)
                 #print(cur_Q,components,self.partition)
                 #if cur_Q not in self.all_Q:
                 self.all_Q.append(cur_Q)
@@ -141,13 +142,23 @@ class GN:
         nx.write_gml(self.G_copy, 'outputofGN.gml')
         
 if __name__ == '__main__':
-    G=nx.read_gml('../datasets/email-Eu-core.gml',label='id') #Using max_Q to divide communities 
+    G=nx.read_gml('../datasets/karate.gml',label='id') #Using max_Q to divide communities 
+    
+    G_copy = G.copy()
     algorithm = GN(G)
-    algorithm.run()
-    algorithm.draw_Q()
+    (partition, all_Q, max_Q) = algorithm.run()
+    print(partition)
+    #algorithm.draw_Q()
     algorithm.add_group()
     algorithm.to_gml()
-	
+    color = [0] * len(G.nodes())
+    for index in range(len(partition)):
+        for item in partition[index]:
+            color[item-1] = index
+    print(color)
+    nx.draw(G_copy,node_color = color,edge_color = 'r',with_labels = True)
+    plt.show()
+
     # G1=nx.read_gml('../datasets/karate.gml',label='id') #Dividing communities by the number
     # algorithmByNum = GN(G1)
     # algorithmByNum.run_n(2)
